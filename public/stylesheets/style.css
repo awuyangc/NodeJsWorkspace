@@ -1,0 +1,46 @@
+body {
+  padding: 10px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+.menu-a
+{
+  display:block;
+    text-align:center;
+    min-width:60px;
+}
+.menu-img {
+    border-radius: 50%;
+    width:50%;
+    height:50%;
+}
+.menu-text {
+    width:100%
+}
+.head-img
+{
+    border-radius: 50%;
+    height:40px;
+    width:40px;
+}
+
+.view footer {
+  background: #f8f8f8;
+  color: black;
+  border-top: 1px solid #c8c7cc;
+  box-shadow: none;
+}
+
+/*以下为修改sui mobile样式*/
+/*.list-block input[type=text], .list-block input[type=password], .list-block input[type=email], .list-block input[type=tel], .list-block input[type=url], .list-block input[type=date], .list-block input[type=datetime-local], .list-block input[type=time], .list-block input[type=number], .list-block input[type=search], .list-block select, .list-block textarea{
+    border:1px solid #92CAE0;
+    border-radius:5px;
+    height:1.5rem;
+}*/
+.list-block input[type=text], .list-block input[type=password], .list-block input[type=email], .list-block input[type=tel], .list-block input[type=url], .list-block input[type=date], .list-block input[type=datetime-local], .list-block input[type=time], .list-block input[type=number], .list-block input[type=search], .list-block select, .list-block textarea{
+    border-bottom:1px solid #92CAE0;
+}

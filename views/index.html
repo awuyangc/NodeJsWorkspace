@@ -1,0 +1,57 @@
+{% extends 'layout.html' %}
+
+{% block title %}{{title}} {%endblock%}
+
+{% block head %}
+
+{% endblock %}
+
+{% block content %}
+<!--首页-->
+<div class="page page-current" id="page1">
+    <header class="bar bar-nav">
+        <img class="head-img pull-left" src="{{wx_user.headimgurl}}">
+        <h1 class="title">一伙锅</h1>
+    </header>
+    <nav class="bar bar-tab">
+        <a class="tab-item active" href="#">
+            <span class="icon icon-home"></span>
+            <span class="tab-label">首页</span>
+        </a>
+    </nav>
+
+    <div class="content">
+        <!-- 这里是页面内容区 -->
+        <div class="content-padded grid-demo">
+            <div class="row">
+                <div class="col-50">
+                    <a class="menu-a" href="/invite"> <img src="/images/huoguo1.jpg" alt="火锅走起"
+                                                          class="menu-img"><br> <span
+                            class="menu-text">火锅走起</span>
+                    </a>
+                </div>
+                <div class="col-50">
+                    <a class="menu-a" href="#rInviteInfo"> <img src="/images/huoguo2.jpg" alt="我的邀请"
+                                                                class="menu-img"><br> <span
+                            class="menu-text">我报名的邀请</span>
+                    </a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-50">
+                    <a class="menu-a" href="#invite"> <img src="/images/huoguo3.jpg" alt="火锅偏好"
+                                                           class="menu-img"><br> <span
+                            class="menu-text">火锅偏好</span>
+                    </a>
+                </div>
+                <div class="col-50">
+                    <a class="menu-a" href="#invite"> <img src="/images/huoguo4.jpg" alt="我的账号"
+                                                           class="menu-img"><br> <span
+                            class="menu-text">我的账号</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
