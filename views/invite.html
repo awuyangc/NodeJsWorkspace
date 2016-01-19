@@ -3,7 +3,7 @@
 {% block title %}{{title}} {%endblock%}
 
 {% block head %}
-
+34234234
 {% endblock %}
 
 {% block content %}
@@ -13,14 +13,14 @@
             <span class="icon icon-left"></span>
             返回
         </a>
-        <button class="button button-link button-nav pull-right">
+        <button class="button button-link button-nav pull-right" onclick="checkForm()">
             下一步
             <span class="icon icon-right"></span>
         </button>
         <h1 class="title">请填写邀请时间</h1>
     </header>
     <nav class="bar bar-tab">
-        <a class="tab-item  active back" href="/index">
+        <a class="tab-item back" href="/index">
             <span class="icon icon-home"></span>
             <span class="tab-label">首页</span>
         </a>
@@ -35,7 +35,7 @@
                         <div class="item-inner">
                             <div class="item-title label" style="width: 5rem">选择日期</div>
                             <div class="item-input">
-                                <input type="text"  placeholder="选择日期" data-toggle='date'/>
+                                <input type="text" id="day"  placeholder="选择日期" data-toggle='date' style="text-align:center"/>
                             </div>
                         </div>
                     </div>
@@ -45,19 +45,52 @@
                         <div class="item-inner" style="width:100%">
                             <div class="item-title label" style="width: 5rem">选择时间段</div>
                             <div class="item-input"  style="width: 4rem">
-                                <input type="time"  placeholder="选择时间" style="text-align:center">
+                                <input type="time" id="time1"  placeholder="选择时间" style="text-align:center"  onchange="time1Change(this.value)">
                             </div>
                             <div class="item-title label"  style="width: 1rem">
                                 到
                             </div>
                             <div class="item-input"  style="width: 4rem">
-                                <input type="time"  placeholder="选择时间" style="text-align:center">
+                                <input type="time" id="time2" placeholder="选择时间" style="text-align:center"  onchange="time2Change(this.value)">
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="item-content">
+                        <div class="item-inner" style="width:100%">
+                            <div class="item-title label" style="width: 5rem">选择地点</div>
+                            <div class="item-input"  style="width: 4rem">
+                                <a href="#page3"><input type="text" id="address"  placeholder="选择地点" disabled="disabled" style="text-align:center"></a>
                             </div>
                         </div>
                     </div>
                 </li>
             </ul>
         </div>
+    </div>
+</div>
+
+<div class="page" id="page3">
+    <header class="bar bar-nav">
+        <a class="button button-link button-nav pull-left back" href="/index">
+            <span class="icon icon-left"></span>
+            返回
+        </a>
+        <a class="button button-link button-nav pull-right" href="#page2" onclick="changeAddress()">
+            地点待定
+            <span class="icon icon-right"></span>
+        </a>
+        <h1 class="title">请选择地点</h1>
+    </header>
+    <nav class="bar bar-tab">
+        <a class="tab-item" href="/index">
+            <span class="icon icon-home"></span>
+            <span class="tab-label">首页</span>
+        </a>
+    </nav>
+    <div class="content">
+
     </div>
 </div>
 {% endblock %}

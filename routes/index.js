@@ -31,6 +31,11 @@ router.get('/invite', function(req, res) {
     res.render('invite', { title:'一伙锅' });
 });
 
+//邀请页面
+router.get('/share', function(req, res) {
+    res.render('share', { title:'一伙锅' });
+});
+
 //用于微信的接入
 router.get('/checkSignature', function(req,res) {
     signature.checkSignature(config)(req,res,function() {

@@ -1,0 +1,32 @@
+{% extends 'layout.html' %}
+
+{% block title %}{{title}} {%endblock%}
+
+{% block head %}
+
+{% endblock %}
+
+{% block content %}
+<div class="page" id="page2">
+    <header class="bar bar-nav">
+        <a class="button button-link button-nav pull-left back" href="/index">
+            <span class="icon icon-left"></span>
+            返回
+        </a>
+        <button class="button button-link button-nav pull-right">
+            下一步
+            <span class="icon icon-right"></span>
+        </button>
+        <h1 class="title">请选择地点</h1>
+    </header>
+    <nav class="bar bar-tab">
+        <a class="tab-item" href="/index">
+            <span class="icon icon-home"></span>
+            <span class="tab-label">首页</span>
+        </a>
+    </nav>
+    <div class="content">
+
+    </div>
+</div>
+{% endblock %}
