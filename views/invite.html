@@ -3,13 +3,12 @@
 {% block title %}{{title}} {%endblock%}
 
 {% block head %}
-34234234
 {% endblock %}
 
 {% block content %}
 <div class="page" id="page2">
     <header class="bar bar-nav">
-        <a class="button button-link button-nav pull-left back" href="/index">
+        <a class="button button-link button-nav pull-left" href="/index">
             <span class="icon icon-left"></span>
             返回
         </a>
@@ -90,7 +89,18 @@
         </a>
     </nav>
     <div class="content">
+    <!--餐厅列表-->
+        <div class="content infinite-scroll infinite-scroll-bottom" data-distance="50">
+            <div class="list-block">
+                <ul class="list-container">
 
+                </ul>
+            </div>
+            <!-- 加载提示符 -->
+            <div class="infinite-scroll-preloader" style="margin-top:-20px">
+                <div class="preloader"></div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
