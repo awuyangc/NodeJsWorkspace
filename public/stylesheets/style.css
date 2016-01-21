@@ -44,3 +44,13 @@ a {
 .list-block input[type=text], .list-block input[type=password], .list-block input[type=email], .list-block input[type=tel], .list-block input[type=url], .list-block input[type=date], .list-block input[type=datetime-local], .list-block input[type=time], .list-block input[type=number], .list-block input[type=search], .list-block select, .list-block textarea{
     border-bottom:1px solid #92CAE0;
 }
+.list-block ul{
+    background:rgba(0,0,0,0);
+}
+.list-block li li:last-child .item-inner:after, .list-block li:last-child li .item-inner:after{
+    display:none;
+}
+
+.card-header:after{
+
+}
