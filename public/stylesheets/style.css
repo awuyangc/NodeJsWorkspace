@@ -51,6 +51,26 @@ a {
     display:none;
 }
 
+.card a{
+    color:black;
+}
 .card-header:after{
+    /*display:none;*/
+}
 
+.list-block ul:before{
+    display:none;
+}
+.list-block ul:after{
+    display:none;
+}
+.card-header{
+    /*border-bottom:1px solid #e1e1e1;*/
+}
+.list-block .item-inner:after{
+    display:none;
+}
+
+.actions-modal-button.color-success{
+   color: #4cd964;
 }

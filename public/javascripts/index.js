@@ -46,28 +46,69 @@ function checkForm(){
         $.router.load('/share', true);
     }
 }
+
+//餐厅选择操作
+$(document).on('click','.create-actions', function (e) {
+    var buttons1 = [
+        {
+            text: '选中',
+            bold: true,
+            color: 'success',
+            onClick: function() {
+                var id=$(e.currentTarget).attr("data");
+                var title=$(e.currentTarget).find(".card-header").text();
+                $("#address").val(title);
+                $("#address").attr("data-id",id);
+                $.router.load('#page2', true);
+            }
+        },
+        {
+            text: '查看详细信息',
+            onClick: function() {
+                $.alert("你选择了“买入“");
+            }
+        }
+    ];
+    var buttons2 = [
+        {
+            text: '取消',
+            bg: 'danger'
+        }
+    ];
+    var groups = [buttons1, buttons2];
+    $.actions(groups);
+});
+
+//背景操作
+
+$(document).on('touchmove','.modal-overlay-visible', function (e) {
+    $(".actions-modal").remove();
+    $(".modal-overlay").removeClass("modal-overlay-visible");
+})
 //添加列表
-function addItems(title,src,content) {
+function addItems(id,title,src,content) {
     // 生成新条目的HTML
    var html = '<li class="item-content">' +
                     '<div class="card" style="width:90%">' +
-                        '<div class="card-header">'+title+'</div>' +
-                        '<div class="card-content">' +
-                        '<div class="list-block media-list">' +
-                            '<ul style="padding-left: 0rem;">' +
-                                '<li class="item-content">' +
-                                    '<div class="item-media">' +
-                                        '<img src="'+src+'" width="60">' +
-                                    '</div>' +
-                                    '<div class="item-inner">' +
-                                        '<div class="item-content">' +
-                                            content +
-                                        '</div>' +
-                                    '</div>' +
-                                '</li>' +
-                            '</ul>' +
-                        '</div>' +
-                        '</div>' +
+                         '<a href="#" class="create-actions" data="'+id+'">'+
+                            '<div class="card-header">'+title+'</div>' +
+                            '<div class="card-content">' +
+                                '<div class="list-block media-list">' +
+                                    '<ul style="padding-left: 0rem;">' +
+                                        '<li class="item-content">' +
+                                            '<div class="item-media">' +
+                                                '<img src="'+src+'" width="60">' +
+                                            '</div>' +
+                                            '<div class="item-inner">' +
+                                                '<div class="item-content">' +
+                                                    content +
+                                                '</div>' +
+                                            '</div>' +
+                                        '</li>' +
+                                    '</ul>' +
+                                '</div>' +
+                            '</div>' +
+                          '</a>'+
                     '</div>' +
             '</li>';
     // 添加新条目
@@ -89,7 +130,7 @@ $(document).on("pageInit", "#page3", function(e, pageId, $page) {
         success: function (result) {
             $(result.datas).each(function(i,val){
                 //初始化
-                addItems(val._name+val._id,val._image.length>0?val._image[0]._preurl:'',val._address);
+                addItems(val._id,val._name,val._image.length>0?val._image[0]._preurl:'',val._address);
             });
             // 注册'infinite'事件处理函数
             $(document).on('infinite', '.infinite-scroll-bottom',function() {
@@ -107,7 +148,7 @@ $(document).on("pageInit", "#page3", function(e, pageId, $page) {
                         success: function (result) {
                             $(result.datas).each(function(i,val){
                                 //初始化
-                                addItems(val._name+val._id,val._image.length>0?val._image[0]._preurl:'',val._address);
+                                addItems(val._id,val._name,val._image.length>0?val._image[0]._preurl:'',val._address);
                             });
                             // 重置加载flag
                             loading = false;
