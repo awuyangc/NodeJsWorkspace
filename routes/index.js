@@ -5,6 +5,7 @@ var OAuth=require('wechat-oauth');
 var mongoose = require('mongoose');
 var wx_user=require('../models/wx_user.js')
 var config =require('../config')();
+var base64url=require("base64-url");
 var client=new OAuth(config.appId, config.appSecret);
 var router = express.Router();
 
@@ -31,9 +32,15 @@ router.get('/invite', function(req, res) {
     res.render('invite', { title:'一伙锅' });
 });
 
-//邀请页面
+//分享页面
 router.get('/share', function(req, res) {
     res.render('share', { title:'一伙锅' });
+});
+
+//地址页面
+router.get('/map', function(req, res) {
+    var id=base64url.decode(base64url.unescape(req.query.id));
+    res.render('map', { id:id });
 });
 
 //用于微信的接入

@@ -49,23 +49,26 @@ function checkForm(){
 
 //餐厅选择操作
 $(document).on('click','.create-actions', function (e) {
+    var id=$(e.currentTarget).attr("data");
+    var title=$(e.currentTarget).find(".card-header").text();
     var buttons1 = [
         {
             text: '选中',
             bold: true,
             color: 'success',
             onClick: function() {
-                var id=$(e.currentTarget).attr("data");
-                var title=$(e.currentTarget).find(".card-header").text();
                 $("#address").val(title);
                 $("#address").attr("data-id",id);
                 $.router.load('#page2', true);
             }
         },
         {
-            text: '查看详细信息',
+            text: '查看地址信息',
             onClick: function() {
-                $.alert("你选择了“买入“");
+                //传入加密参数
+                var param=encode(id);
+                var url='/map?id='+param;
+                $.router.load(url, true);
             }
         }
     ];
@@ -115,7 +118,7 @@ function addItems(id,title,src,content) {
     $('.infinite-scroll-bottom .list-container').append(html);
 }
 
-//
+//餐厅列表页面初始化
 $(document).on("pageInit", "#page3", function(e, pageId, $page) {
     // 加载flag
     var loading = false;
@@ -169,4 +172,56 @@ $(document).on("pageInit", "#page3", function(e, pageId, $page) {
             });
         }
     });
+});
+
+//escape函数
+function escape(str){
+    return str.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
+//64位加密
+function encode(str) {
+    return escape(window.btoa(str));
+};
+
+//地图页面初始化
+$(document).on("pageInit", "#page4", function(e, pageId, $page) {
+    var map=null;
+    //构造云数据检索类
+    var search = new AMap.CloudDataSearch('55656259e4b0ccb608f13383');
+    //根据id查询
+    search.searchById($("#container").attr("data"), cloudSearch_CallBack);
+    function cloudSearch_CallBack(status, data) {
+        var clouddata = data.datas[0];
+        //添加marker
+        var location = clouddata._location;
+        var map = new AMap.Map("container", {
+            resizeEnable: true,
+            zoom: 12, //地图显示的缩放级别
+            center:location
+        });
+        map.plugin(["AMap.ToolBar"], function() {
+            map.addControl(new AMap.ToolBar());
+        });
+        map.plugin(["AMap.AdvancedInfoWindow"], function() {
+            map.addControl(new AMap.AdvancedInfoWindow());
+        });
+        var marker = new AMap.Marker({
+            map: map,
+            position: location
+        });
+        //添加infowindow
+        var photo = [];
+       // if (clouddata._image[0]) {//如果有上传的图片
+       //     photo = ['<img width=240 height=100 src="' + clouddata._image[0]._preurl + '"><br>'];
+       // }
+        var infoWindow = new AMap.AdvancedInfoWindow({
+            content: "<font face=\"微软雅黑\"color=\"#3366FF\">" + clouddata._name + "</font><hr />" + "地址：" + clouddata._address + "<br />",
+            autoMove: true,
+            offset: {x: 0, y: -30}
+        });
+        infoWindow.open(map, marker.getPosition());
+        marker.on('click', function(e) {
+            infoWindow.open(map, marker.getPosition());
+        });
+    }
 });

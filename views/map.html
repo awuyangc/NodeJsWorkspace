@@ -1,0 +1,21 @@
+{% extends 'layout.html' %}
+
+{% block title %}{{title}} {%endblock%}
+
+{% block head %}
+
+{% endblock %}
+
+{% block content %}
+<div class="page" id="page4">
+    <header class="bar bar-nav">
+        <a class="button button-link button-nav pull-left back" href="/index">
+            <span class="icon icon-left"></span>
+            返回
+        </a>
+        <h1 class="title">地图</h1>
+    </header>
+    <div class="content" id="container" data="{{id}}">
+    </div>
+</div>
+{% endblock %}
