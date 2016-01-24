@@ -17,27 +17,26 @@ router.get('/', function(req, res, next) {
         res.render('index', { title:'重构中！！！' ,wx_user: req.session.current_user});
     }
     else {
+        //进入授权流程
         var url = client.getAuthorizeURL('http://' + config.domain + '/callback','','snsapi_userinfo');
         res.redirect(url)
     }
-
-    //res.render('index', { title: '重构中！！！！' });
 });
-//进入首页
+//首页跳转
 router.get('/index', function(req, res, next) {
     res.render('index', { title:'重构中！！！' ,wx_user: req.session.current_user});
 });
-//邀请页面
+//邀请页面跳转
 router.get('/invite', function(req, res) {
     res.render('invite', { title:'一伙锅' });
 });
 
-//分享页面
+//分享页面跳转
 router.get('/share', function(req, res) {
     res.render('share', { title:'一伙锅' });
 });
 
-//地址页面
+//地图页面跳转
 router.get('/map', function(req, res) {
     var id=base64url.decode(base64url.unescape(req.query.id));
     res.render('map', { id:id });
@@ -50,8 +49,9 @@ router.get('/checkSignature', function(req,res) {
     });
 });
 
+//进行签名
 router.get('/getSignature', function(req, res){
-  var url = req.url;
+    var url=req.param("url");
   signature.getSignature(config)(url, function(error, result) {
     if (error) {
       res.json({

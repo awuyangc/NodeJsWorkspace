@@ -1,21 +1,69 @@
 /**
- * Created by Administrator on 2016/1/19.
+ * Created by wuyang on 2016/1/19.
  */
+//在首页初始化完毕后进行js的签名
+$.ajax({
+    url: "/getSignature",
+    data:{url:location.href.split('#')[0]},
+    success: function (data) {
+        wx.config({
+            debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+            appId: data.appId, // 必填，公众号的唯一标识
+            timestamp:data.timestamp, // 必填，生成签名的时间戳
+            nonceStr: data.nonceStr, // 必填，生成签名的随机串
+            signature: data.signature,// 必填，签名，见附录1
+            jsApiList: [
+                'checkJsApi',
+                'onMenuShareTimeline',
+                'onMenuShareAppMessage',
+                'hideMenuItems',
+                'showMenuItems',
+                'hideAllNonBaseMenuItem',
+                'showAllNonBaseMenuItem',
+                'getNetworkType',
+                'openLocation',
+                'getLocation',
+                'hideOptionMenu',
+                'showOptionMenu',
+                'closeWindow',
+                'scanQRCode',
+                'openProductSpecificView'
+            ] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+        });
+        // config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后，config是一个客户端的异步操作，所以如果需要在页面加载时就调用相关接口，则须把相关接口放在ready函数中调用来确保正确执行。对于用户触发时才调用的接口，则可以直接调用，不需要放在ready函数中。
+        wx.ready(function(){
+            wx.hideOptionMenu();
+        });
+
+        wx.error(function(res){
+            alert("微信js签名错误,请重新进入！");
+            // config信息验证失败会执行error函数，如签名过期导致验证失败，具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
+        });
+
+    }
+});
+//初始化首页
+$(document).on("pageInit", "#page1", function(e, pageId, $page) {
+
+});
 //选择地址待定时触发
 function changeAddress(){
     $("#address").val("地点待定");
     return true;
 }
-//选择时间段时触发
+
+//选择时间段时触发，开始时间
 function time1Change(param){
     var datetime=new Date().Format("yyyy/MM/dd")+" "+param;
     $("#time2").val( new Date(new Date(datetime).getTime()+3600000*2).Format("hh:mm"));
 }
-//选择时间段时触发
+
+//选择时间段时触发，结束时间
 function time2Change(param){
     var datetime=new Date().Format("yyyy/MM/dd")+" "+param;
     $("#time1").val( new Date(new Date(datetime).getTime()-3600000*2).Format("hh:mm"));
 }
+
 //日期格式化函数
 Date.prototype.Format = function (fmt) { //author: meizz
     var o = {
@@ -33,7 +81,7 @@ Date.prototype.Format = function (fmt) { //author: meizz
     return fmt;
 }
 
-//表单校验
+//表单校验，校验邀请信息是否填写完整
 function checkForm(){
     var info="";
     if( $("#day").val().trim()==""|| $("#time1").val().trim()==""||$("#time2").val().trim()==""||$("#address").val().trim()==""){
@@ -47,7 +95,7 @@ function checkForm(){
     }
 }
 
-//餐厅选择操作
+//餐厅选择操作,点击餐厅时触发
 $(document).on('click','.create-actions', function (e) {
     var id=$(e.currentTarget).attr("data");
     var title=$(e.currentTarget).find(".card-header").text();
@@ -82,13 +130,13 @@ $(document).on('click','.create-actions', function (e) {
     $.actions(groups);
 });
 
-//背景操作
-
+//背景操作，滑动列表时触发，去掉遮罩
 $(document).on('touchmove','.modal-overlay-visible', function (e) {
     $(".actions-modal").remove();
     $(".modal-overlay").removeClass("modal-overlay-visible");
 })
-//添加列表
+
+//添加餐厅列表
 function addItems(id,title,src,content) {
     // 生成新条目的HTML
    var html = '<li class="item-content">' +
@@ -131,10 +179,12 @@ $(document).on("pageInit", "#page3", function(e, pageId, $page) {
         dataType : "jsonp",
         url:url,
         success: function (result) {
-            $(result.datas).each(function(i,val){
-                //初始化
-                addItems(val._id,val._name,val._image.length>0?val._image[0]._preurl:'',val._address);
-            });
+            //如果没有显示则进行初始化
+            if($('.list-container .card').length==0){
+                $(result.datas).each(function(i,val){
+                    addItems(val._id,val._name,val._image.length>0?val._image[0]._preurl:'',val._address);
+                });
+            }
             // 注册'infinite'事件处理函数
             $(document).on('infinite', '.infinite-scroll-bottom',function() {
                 // 如果正在加载，则退出
@@ -142,42 +192,62 @@ $(document).on("pageInit", "#page3", function(e, pageId, $page) {
                 // 设置flag
                 loading = true;
                 var lastIndex = $('.list-container .card').length;
-                // 模拟1s的加载过程
-                setTimeout(function() {
-                    var url="http://yuntuapi.amap.com/datasearch/local?tableid=55656259e4b0ccb608f13383&city=武汉市&keywords=&limit="+itemsPerLoad+"&page="+(lastIndex/itemsPerLoad+1)+"&key=861347745e27c5cc79e4aa86befb961a";
-                    $.ajax({
-                        dataType : "jsonp",
-                        url:url,
-                        success: function (result) {
-                            $(result.datas).each(function(i,val){
-                                //初始化
-                                addItems(val._id,val._name,val._image.length>0?val._image[0]._preurl:'',val._address);
-                            });
-                            // 重置加载flag
-                            loading = false;
-                            //如果获得的结果数量小于默认数量则判断加载完毕
-                            if (result.datas.length<itemsPerLoad) {
-                                // 加载完毕，则注销无限加载事件，以防不必要的加载
-                                $.detachInfiniteScroll($('.infinite-scroll'));
-                                // 删除加载提示符
-                                $('.infinite-scroll-preloader').remove();
-                                return;
+                //判断是否全部加载,查看lastIndex是否能整除itemsPerLoad，如果true可能没有全部加载，如果fals全部加载
+                if(zhengchu(lastIndex,itemsPerLoad)){
+                    // 模拟1s的加载过程
+                    setTimeout(function() {
+                        var url="http://yuntuapi.amap.com/datasearch/local?tableid=55656259e4b0ccb608f13383&city=武汉市&keywords=&limit="+itemsPerLoad+"&page="+(lastIndex/itemsPerLoad+1)+"&key=861347745e27c5cc79e4aa86befb961a";
+                        $.ajax({
+                            dataType : "jsonp",
+                            url:url,
+                            success: function (result) {
+                                $(result.datas).each(function(i,val){
+                                    addItems(val._id,val._name,val._image.length>0?val._image[0]._preurl:'',val._address);
+                                });
+                                // 重置加载flag
+                                loading = false;
+                                //如果获得的结果数量小于默认数量则判断加载完毕
+                                if (result.datas.length<itemsPerLoad) {
+                                    // 加载完毕，则注销无限加载事件，以防不必要的加载
+                                    $.detachInfiniteScroll($('.infinite-scroll'));
+                                    // 删除加载提示符
+                                    $('.infinite-scroll-preloader').remove();
+                                    return;
+                                }
+                                //容器发生改变,如果是js滚动，需要刷新滚动
+                                $.refreshScroller();
                             }
-                            //容器发生改变,如果是js滚动，需要刷新滚动
-                            $.refreshScroller();
-                        }
-                    })
+                        })
 
-                }, 500);
+                    }, 500);
+                }
+                else{
+                    $.detachInfiniteScroll($('.infinite-scroll'));
+                    // 删除加载提示符
+                    $('.infinite-scroll-preloader').remove();
+                    return;
+                }
             });
         }
     });
 });
 
+//判断是否能整除
+function zhengchu(x,y){
+    var z=Math.floor(x/y);
+    if(z*y==x){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
 //escape函数
 function escape(str){
     return str.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 }
+
 //64位加密
 function encode(str) {
     return escape(window.btoa(str));
@@ -224,4 +294,9 @@ $(document).on("pageInit", "#page4", function(e, pageId, $page) {
             infoWindow.open(map, marker.getPosition());
         });
     }
+});
+
+//分享页面的初始化
+$(document).on("pageInit", "#page5", function(e, pageId, $page) {
+    wx.hideOptionMenu();
 });
