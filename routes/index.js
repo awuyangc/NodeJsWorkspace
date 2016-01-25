@@ -33,7 +33,11 @@ router.get('/invite', function(req, res) {
 
 //分享页面跳转
 router.get('/share', function(req, res) {
-    res.render('share', { title:'一伙锅' });
+    var day=base64url.decode(base64url.unescape(req.query.day));
+    var time1=base64url.decode(base64url.unescape(req.query.time1));
+    var time2=base64url.decode(base64url.unescape(req.query.time2));
+    var address=base64url.decode(base64url.unescape(req.query.address));
+    res.render('share', { day:day,time1:time1,time2:time2,address:address});
 });
 
 //地图页面跳转

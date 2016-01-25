@@ -100,6 +100,42 @@
             <div class="infinite-scroll-preloader" style="margin-top:-20px">
                 <div class="preloader"></div>
             </div>
-        </div>
     </div>
+</div>
+
+<div class="page" id="page4">
+    <header class="bar bar-nav">
+        <a class="button button-link button-nav pull-left back" href="/index">
+            <span class="icon icon-left"></span>
+            返回
+        </a>
+        <h1 class="title">地图</h1>
+    </header>
+    <div class="content" id="container" data="{{id}}">
+    </div>
+</div>
+
+<div class="page" id="page5">
+    <header class="bar bar-nav">
+        <a class="button button-link button-nav pull-left back">
+            <span class="icon icon-left"></span>
+            返回
+        </a>
+        <button class="button button-link button-nav pull-right">
+            分享
+            <span class="icon icon-right"></span>
+        </button>
+        <h1 class="title">分享给好友吧</h1>
+    </header>
+    <nav class="bar bar-tab">
+        <a class="tab-item" href="/index">
+            <span class="icon icon-home"></span>
+            <span class="tab-label">首页</span>
+        </a>
+    </nav>
+    <div class="content" id="share">
+        <div id="info"></div>
+        <div id="mask"></div>
+    </div>
+</div>
 {% endblock %}

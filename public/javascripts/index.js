@@ -7,7 +7,7 @@ $.ajax({
     data:{url:location.href.split('#')[0]},
     success: function (data) {
         wx.config({
-            debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+            debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
             appId: data.appId, // 必填，公众号的唯一标识
             timestamp:data.timestamp, // 必填，生成签名的时间戳
             nonceStr: data.nonceStr, // 必填，生成签名的随机串
@@ -44,11 +44,17 @@ $.ajax({
 });
 //初始化首页
 $(document).on("pageInit", "#page1", function(e, pageId, $page) {
-
+    wx.hideOptionMenu();
 });
+//填写邀请信息页面
+$(document).on("pageInit", "#page2", function(e, pageId, $page) {
+    wx.hideOptionMenu();
+});
+
 //选择地址待定时触发
 function changeAddress(){
     $("#address").val("地点待定");
+    $("#address").attr("data-id","");
     return true;
 }
 
@@ -90,8 +96,10 @@ function checkForm(){
         })
     }
     else{
-        //window.location.href="/share";
-        $.router.load('/share', true);
+        //设置地图页面的id
+        var id=$("#address").attr("data-id");
+        $("#container").attr("data",id);
+        $.router.load('#page5', true);
     }
 }
 
@@ -107,6 +115,8 @@ $(document).on('click','.create-actions', function (e) {
             onClick: function() {
                 $("#address").val(title);
                 $("#address").attr("data-id",id);
+                //设置地图页面的id
+                $("#container").attr("data",id);
                 $.router.load('#page2', true);
             }
         },
@@ -114,9 +124,10 @@ $(document).on('click','.create-actions', function (e) {
             text: '查看地址信息',
             onClick: function() {
                 //传入加密参数
-                var param=encode(id);
-                var url='/map?id='+param;
-                $.router.load(url, true);
+                var url='#page4';
+                //设置地图页面的id
+                $("#container").attr("data",id);
+                $.router.load(url, false);
             }
         }
     ];
@@ -168,6 +179,7 @@ function addItems(id,title,src,content) {
 
 //餐厅列表页面初始化
 $(document).on("pageInit", "#page3", function(e, pageId, $page) {
+    wx.hideOptionMenu();
     // 加载flag
     var loading = false;
     // 最多可加载的条目
@@ -295,8 +307,65 @@ $(document).on("pageInit", "#page4", function(e, pageId, $page) {
         });
     }
 });
+//加载前
+$(document).on("pageAnimationStart", "#page4", function(e, pageId, $page) {
+
+    $("#container").html("");
+});
 
 //分享页面的初始化
 $(document).on("pageInit", "#page5", function(e, pageId, $page) {
-    wx.hideOptionMenu();
+        var day=$("#day").val();
+        var time1=$("#time1").val();
+        var time2=$("#time2").val();
+        var address=$("#address").attr("data-id");
+        if(address.trim()!=""){
+            //显示用户选择的餐厅
+            var url="http://yuntuapi.amap.com/datasearch/id?tableid=55656259e4b0ccb608f13383&_id="+address+"&key=861347745e27c5cc79e4aa86befb961a";
+            $.ajax({
+                dataType : "jsonp",
+                url:url,
+                success: function (result) {
+                    $(result.datas).each(function(i,val){
+                        var html ='<div style="color:red;font-size:25px;padding-top:10px;text-align:center;">邀请单信息</div>'+
+                            '<div class="card" style="width:95%">' +
+                            '<a href="#page4" data="'+val._id+'">'+
+                            '<div class="card-header">'+val._name+'</div>' +
+                            '<div class="card-content">' +
+                            '<div class="list-block media-list">' +
+                            '<ul style="padding-left: 0rem;">' +
+                            '<li class="item-content">' +
+                            '<div class="item-media">' +
+                            '<img src="'+(val._image.length>0?val._image[0]._preurl:'')+'" width="60">' +
+                            '</div>' +
+                            '<div class="item-inner">' +
+                            '<div class="item-content">' +
+                                 val._address +
+                            '</div>' +
+                            '</div>' +
+                            '</li>' +
+                            '</ul>' +
+                            '</div>' +
+                            '</div>' +
+                            '<div class="card-footer">'+
+                                '<span>邀请日期： '+day+'</span><br>'+
+                                '<span style="padding-top: 5px;">到店时间： '+time1+' 到 '+time2+' 之间</span>'+
+                            '</div>'+
+                            '</a>'+
+                            '</div>';
+                        // 添加新条目
+                        $('#info').html(html);
+                    });
+                }
+            });
+        }
+        else{
+            //如果是地址待定的情况,给出推荐餐厅信息，待补充。
+            $("#info").html("");
+        }
+
+});
+//加载前
+$(document).on("pageAnimationStart", "#page5", function(e, pageId, $page) {
+    $("#info").html("");
 });
