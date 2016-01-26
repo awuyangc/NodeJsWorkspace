@@ -45,13 +45,13 @@
                         <div class="item-inner" style="width:100%">
                             <div class="item-title label" style="width: 5rem">选择时间段</div>
                             <div class="item-input"  style="width: 4rem">
-                                <input type="time" id="time1"  placeholder="选择时间" style="text-align:center"  onchange="time1Change(this.value)">
+                                <input type="time" id="time1" style="text-align:center;padding:11px 0 11px 0"  onchange="time1Change(this.value)">
                             </div>
                             <div class="item-title label"  style="width: 1rem">
                                 到
                             </div>
                             <div class="item-input"  style="width: 4rem">
-                                <input type="time" id="time2" placeholder="选择时间" style="text-align:center"  onchange="time2Change(this.value)">
+                                <input type="time" id="time2" style="text-align:center;padding:11px 0 11px 0"  onchange="time2Change(this.value)">
                             </div>
                         </div>
                     </div>
@@ -121,7 +121,7 @@
             <span class="icon icon-left"></span>
             返回
         </a>
-        <button class="button button-link button-nav pull-right">
+        <button class="button button-link button-nav pull-right" onclick="share()">
             分享
             <span class="icon icon-right"></span>
         </button>
@@ -135,7 +135,10 @@
     </nav>
     <div class="content" id="share">
         <div id="info"></div>
-        <div id="mask"></div>
+        <div id="mask" class="modal-overlay" style="color:white;font-size:20px">
+            <div style="padding-top: 30px;padding-bottom:5px;text-align:center;">点击右上角图标 •••  </div>
+            <div style="text-align:center;">来邀请好友或者分享到朋友圈吧！</div>
+        </div>
     </div>
 </div>
 {% endblock %}
