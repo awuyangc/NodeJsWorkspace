@@ -327,6 +327,7 @@ $(document).on("pageInit", "#page5", function(e, pageId, $page) {
                 dataType : "jsonp",
                 url:url,
                 success: function (result) {
+                    //只有一个结果
                     $(result.datas).each(function(i,val){
                         var html ='<div style="color:red;font-size:25px;padding-top:10px;text-align:center;">邀请单信息</div>'+
                             '<div class="card" style="width:95%">' +
@@ -356,6 +357,39 @@ $(document).on("pageInit", "#page5", function(e, pageId, $page) {
                             '</div>';
                         // 添加新条目
                         $('#info').html(html);
+                        //监听分享操作
+                        //分享页面的监听
+                        var title="一伙锅";
+                        var desc="";
+                        var link="";
+                        var imgUrl='http://awuyangc.xicp.net/images/qrcode/qrcode_for_gh_be461b35d165_258.jpg';
+                        wx.onMenuShareAppMessage({
+                            title:title, // 分享标题
+                            desc:desc, // 分享描述
+                            link: link, // 分享链接
+                            imgUrl:imgUrl, // 分享图标
+                            type: '', // 分享类型,music、video或link，不填默认为link
+                            dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
+                            trigger: function (res) {
+                                //将信息存储到数据库
+                                var own=this;
+                                $.ajax({
+                                    async:false,
+                                    url: "/saveInviteInfo",
+                                    data: {day:encode(day),time1:encode(time1),time2:encode(time2),address:encode(address)},
+                                    success: function (data) {
+                                        own.desc="您的好友 "+data.nickName+" 邀请您一伙锅";
+                                        own.link='http://awuyangc.xicp.net/index?&inviteId='+data._id; // 分享链接
+                                    }
+                                })
+                            },
+                            success: function () {
+                                // 用户确认分享后执行的回调函数
+                            },
+                            cancel: function () {
+                                // 用户取消分享后执行的回调函数
+                            }
+                        });
                     });
                 }
             });

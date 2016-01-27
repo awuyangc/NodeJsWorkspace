@@ -3,7 +3,7 @@ var signature = require('wx_jsapi_sign');
 var API=require('wechat-api');
 var OAuth=require('wechat-oauth');
 var mongoose = require('mongoose');
-var wx_user=require('../models/wx_user.js')
+var mgSchema=require('../models/mg_schema.js');
 var config =require('../config')();
 var base64url=require("base64-url");
 var client=new OAuth(config.appId, config.appSecret);
@@ -18,6 +18,7 @@ router.get('/', function(req, res, next) {
     }
     else {
         //进入授权流程
+        console.log("用户session不存在进入授权流程");
         var url = client.getAuthorizeURL('http://' + config.domain + '/callback','','snsapi_userinfo');
         res.redirect(url)
     }
@@ -55,7 +56,7 @@ router.get('/checkSignature', function(req,res) {
 
 //进行签名
 router.get('/getSignature', function(req, res){
-    var url=req.param("url");
+    var url=req.query.url;
   signature.getSignature(config)(url, function(error, result) {
     if (error) {
       res.json({
@@ -111,7 +112,7 @@ router.get('/menu', function(req, res){
 router.get('/callback', function(req, res) {
     console.log('----微信开始回调-----')
     var code = req.query.code;
-    var User = wx_user.user;
+    var User = mgSchema.user;
     client.getAccessToken(code, function (err, result) {
         var accessToken = result.data.access_token;
         var openid = result.data.openid;
@@ -144,5 +145,31 @@ router.get('/callback', function(req, res) {
         });
     });
 });
+
+//保存邀请单信息
+router.get('/saveInviteInfo', function(req, res) {
+    var InviteInfo = mgSchema.invite;
+    var _inviteInfo=new InviteInfo();
+    _inviteInfo.openid= req.session.current_user.openid;
+    _inviteInfo.day=base64url.decode(base64url.unescape(req.query.day));
+    _inviteInfo.time_begin=base64url.decode(base64url.unescape(req.query.time1));
+    _inviteInfo.time_end=base64url.decode(base64url.unescape(req.query.time2));
+    _inviteInfo.address=base64url.decode(base64url.unescape(req.query.address));
+    _inviteInfo.save(function(err, invite) {
+        if (err) {
+            console.log('保存用户失败 ....' + err);
+        } else {
+            console.log('保存用户成功 ....');
+            //返回id
+            var resAjax={
+                _id:invite._id.toString(),
+                nickName: req.session.current_user.nickname
+            };
+
+            res.json(resAjax);
+        }
+    });
+
+})
 
 module.exports = router;

@@ -15,3 +15,14 @@ var userScheMa = new Schema({
     unionid:String
 }); //  定义了一个新的模型，但是此模式还未和users集合有关联
 exports.user = db.model('c_wx_user', userScheMa); //  与users集合关联
+
+var inviteScheMa = new Schema({
+    openid:String,
+    day: String,
+    time_begin:String,
+    time_end:String,
+    address:String,
+    create_time:String,
+    status:String
+}); //  定义了一个新的模型，但是此模式还未和users集合有关联
+exports.invite = db.model('c_invite_info', inviteScheMa); //  与users集合关联
