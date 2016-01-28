@@ -379,15 +379,18 @@ $(document).on("pageInit", "#page5", function(e, pageId, $page) {
                                     data: {day:encode(day),time1:encode(time1),time2:encode(time2),address:encode(address)},
                                     success: function (data) {
                                         own.desc="您的好友 "+data.nickName+" 邀请您一伙锅";
-                                        own.link='http://awuyangc.xicp.net/index?&inviteId='+data._id; // 分享链接
+                                        own.link='http://awuyangc.xicp.net/check_sign?&inviteId='+encode(data._id); // 分享链接
                                     }
                                 })
                             },
                             success: function () {
                                 // 用户确认分享后执行的回调函数
+                                //跳转到我的邀请页面
                             },
                             cancel: function () {
                                 // 用户取消分享后执行的回调函数
+                                //删除存储到数据库中的数据
+                               alert("您的邀请单信息已经保存，可在‘我的邀请’中查看");
                             }
                         });
                     });
@@ -411,23 +414,8 @@ function share(){
     //弹出遮罩层让指导用户操作
     $("#mask").addClass("modal-overlay-visible");
 }
-/*
-var title='一伙锅';
-var desc='您发起的一伙锅邀请！';
-var link='http://awuyangc.xicp.net&inviteId='+inviteId; // 分享链接
-var imgUrl='http://awuyangc.xicp.net/origin/img/c/qrcode_for_gh_be461b35d165_258.jpg'; // 分享图标
-wx.onMenuShareAppMessage({
-    title: title, // 分享标题
-    desc: desc, // 分享描述
-    link: link, // 分享链接
-    imgUrl: imgUrl, // 分享图标
-    type: '', // 分享类型,music、video或link，不填默认为link
-    dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
-    success: function () {
-        // 用户确认分享后执行的回调函数
-    },
-    cancel: function () {
-        // 用户取消分享后执行的回调函数
-    }
+
+//签名页面初始化
+$(document).on("pageInit", "#page6", function(e, pageId, $page) {
+
 });
-*/

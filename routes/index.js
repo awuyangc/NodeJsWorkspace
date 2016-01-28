@@ -172,4 +172,81 @@ router.get('/saveInviteInfo', function(req, res) {
 
 })
 
+
+//进入报名页的处理
+router.get('/check_sign', function(req, res) {
+    var inviteId=base64url.decode(base64url.unescape(req.query.inviteId));
+    //查找对应的邀请信息
+    var InviteInfo = mgSchema.invite;
+    //查询本地数据库看是否存在此User
+    //注意此方法是异步的
+    InviteInfo.findOne({_id:mongoose.Types.ObjectId(inviteId)}, function(err, inviteInfo){
+        console.log('开始查询本地数据库的邀请单信息')
+        if(err || inviteInfo == null|| inviteInfo.length==0){
+            console.log('本地数据库没有此邀请单');
+            //跳转到error页面
+            res.render('error', {info:"没有邀请单"});
+        }else{
+            console.log('根据_id查询，邀请单存在，将邀请单信息存入session');
+            req.session.inviteInfo = inviteInfo;
+            //首先获取用户信息
+            if(req.session.current_user!=null){
+                console.log("用户session存在直接进入");
+                res.redirect("/sign");
+            }
+            else {
+                //进入授权流程
+                console.log("用户session不存在进入授权流程");
+                var url = client.getAuthorizeURL('http://' + config.domain + '/sign_callback','','snsapi_userinfo');
+                res.redirect(url)
+            }
+        }
+    });
+});
+
+//报名页跳转
+router.get('/sign', function(req, res) {
+    //首先获取用户信息
+        var  inviteInfo=req.session.inviteInfo;
+        res.render('sign', { title:'重构中！！！' ,wx_user: req.session.current_user,inviteInfo:inviteInfo});
+});
+//报名页的用户授权
+router.get('/sign_callback', function(req, res) {
+    console.log('----微信开始回调-----')
+    var code = req.query.code;
+    var User = mgSchema.user;
+    client.getAccessToken(code, function (err, result) {
+        var accessToken = result.data.access_token;
+        var openid = result.data.openid;
+        console.log('token=' + accessToken);
+        console.log('openid=' + openid);
+        //查询本地数据库看是否存在此User
+        User.findOne({openid:openid}, function(err, user){
+            console.log('开始查询本地数据库是否有此用户')
+            if(err || user == null|| user.length==0){
+                console.log('本地数据库没有此用户,向微信发起获取用户详细信息的请求');
+                client.getUser(openid, function (err, result) {
+                    var oauth_user = result;
+                    var _user = new User(oauth_user);
+                    _user.save(function(err, user) {
+                        if (err) {
+                            console.log('保存用户失败 ....' + err);
+                        } else {
+                            console.log('保存用户成功 ....');
+                            req.session.current_user = _user;
+                            res.redirect('/sign');
+                        }
+                    });
+
+                });
+            }else{
+                console.log('根据openid查询，用户已经存在，转到报名页');
+                req.session.current_user = user;
+                res.redirect('/sign');
+            }
+        });
+    });
+});
+
+
 module.exports = router;

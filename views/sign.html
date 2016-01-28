@@ -1,0 +1,28 @@
+{% extends 'layout.html' %}
+
+{% block title %}{{title}} {%endblock%}
+
+{% block head %}
+
+{% endblock %}
+
+{% block content %}
+<!--首页-->
+<div class="page page-current" id="page6">
+    <header class="bar bar-nav">
+        <img class="head-img pull-left" src="{{wx_user.headimgurl}}">
+        <h1 class="title">报名页</h1>
+    </header>
+    <nav class="bar bar-tab">
+        <a class="tab-item active" href="/index">
+            <span class="icon icon-home"></span>
+            <span class="tab-label">首页</span>
+        </a>
+    </nav>
+
+    <div class="content">
+        <!-- 这里是页面内容区 -->
+        地址是:{{inviteInfo.address}}{{inviteInfo.day}}
+    </div>
+</div>
+{% endblock %}
