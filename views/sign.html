@@ -20,9 +20,23 @@
         </a>
     </nav>
 
-    <div class="content">
+    <div class="content" id="sign" data-inviteInfo-address="{{inviteInfo.address}}" data-inviteInfo-day="{{inviteInfo.day}}" data-inviteInfo-time1="{{inviteInfo.time_begin}}" data-inviteInfo-time2="{{inviteInfo.time_end}}">
         <!-- 这里是页面内容区 -->
-        地址是:{{inviteInfo.address}}{{inviteInfo.day}}
+        <div style="font-size:15px;text-align:center;padding:10px">您的好友 “{{inviteUser.nickname}}” 邀请您一伙锅去！</div>
+        <div id="info"></div>
+        <div id="personGroup"></div>
+    </div>
+</div>
+
+<div class="page" id="page7">
+    <header class="bar bar-nav">
+        <a class="button button-link button-nav pull-left back">
+            <span class="icon icon-left"></span>
+            返回
+        </a>
+        <h1 class="title">地图</h1>
+    </header>
+    <div class="content" id="container" >
     </div>
 </div>
 {% endblock %}

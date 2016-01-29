@@ -33,7 +33,6 @@ $.ajax({
         // config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后，config是一个客户端的异步操作，所以如果需要在页面加载时就调用相关接口，则须把相关接口放在ready函数中调用来确保正确执行。对于用户触发时才调用的接口，则可以直接调用，不需要放在ready函数中。
         wx.ready(function(){
             wx.hideOptionMenu();
-
         });
 
         wx.error(function(res){
@@ -287,35 +286,36 @@ $(document).on("pageInit", "#page4", function(e, pageId, $page) {
         });
         map.plugin(["AMap.AdvancedInfoWindow"], function() {
             map.addControl(new AMap.AdvancedInfoWindow());
-        });
-        var marker = new AMap.Marker({
-            map: map,
-            position: location
-        });
-        //添加infowindow
-        var photo = [];
-       // if (clouddata._image[0]) {//如果有上传的图片
-       //     photo = ['<img width=240 height=100 src="' + clouddata._image[0]._preurl + '"><br>'];
-       // }
-        var infoWindow = new AMap.AdvancedInfoWindow({
-            content: "<font face=\"微软雅黑\"color=\"#3366FF\">" + clouddata._name + "</font><hr />" + "地址：" + clouddata._address + "<br />",
-            autoMove: true,
-            offset: {x: 0, y: -30}
-        });
-        infoWindow.open(map, marker.getPosition());
-        marker.on('click', function(e) {
+            var marker = new AMap.Marker({
+                map: map,
+                position: location
+            });
+            //添加infowindow
+            var photo = [];
+            // if (clouddata._image[0]) {//如果有上传的图片
+            //     photo = ['<img width=240 height=100 src="' + clouddata._image[0]._preurl + '"><br>'];
+            // }
+            var infoWindow = new AMap.AdvancedInfoWindow({
+                content: "<font face=\"微软雅黑\"color=\"#3366FF\">" + clouddata._name + "</font><hr />" + "地址：" + clouddata._address + "<br />",
+                autoMove: true,
+                offset: {x: 0, y: -30}
+            });
             infoWindow.open(map, marker.getPosition());
+            marker.on('click', function(e) {
+                infoWindow.open(map, marker.getPosition());
+            });
         });
+
     }
 });
 //加载前
 $(document).on("pageAnimationStart", "#page4", function(e, pageId, $page) {
-
     $("#container").html("");
 });
 
 //分享页面的初始化
 $(document).on("pageInit", "#page5", function(e, pageId, $page) {
+    wx.showOptionMenu();
         var day=$("#day").val();
         var time1=$("#time1").val();
         var time2=$("#time2").val();
@@ -324,6 +324,7 @@ $(document).on("pageInit", "#page5", function(e, pageId, $page) {
             //显示用户选择的餐厅
             var url="http://yuntuapi.amap.com/datasearch/id?tableid=55656259e4b0ccb608f13383&_id="+address+"&key=861347745e27c5cc79e4aa86befb961a";
             $.ajax({
+                async:false,
                 dataType : "jsonp",
                 url:url,
                 success: function (result) {
@@ -357,42 +358,6 @@ $(document).on("pageInit", "#page5", function(e, pageId, $page) {
                             '</div>';
                         // 添加新条目
                         $('#info').html(html);
-                        //监听分享操作
-                        //分享页面的监听
-                        var title="一伙锅";
-                        var desc="";
-                        var link="";
-                        var imgUrl='http://awuyangc.xicp.net/images/qrcode/qrcode_for_gh_be461b35d165_258.jpg';
-                        wx.onMenuShareAppMessage({
-                            title:title, // 分享标题
-                            desc:desc, // 分享描述
-                            link: link, // 分享链接
-                            imgUrl:imgUrl, // 分享图标
-                            type: '', // 分享类型,music、video或link，不填默认为link
-                            dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
-                            trigger: function (res) {
-                                //将信息存储到数据库
-                                var own=this;
-                                $.ajax({
-                                    async:false,
-                                    url: "/saveInviteInfo",
-                                    data: {day:encode(day),time1:encode(time1),time2:encode(time2),address:encode(address)},
-                                    success: function (data) {
-                                        own.desc="您的好友 "+data.nickName+" 邀请您一伙锅";
-                                        own.link='http://awuyangc.xicp.net/check_sign?&inviteId='+encode(data._id); // 分享链接
-                                    }
-                                })
-                            },
-                            success: function () {
-                                // 用户确认分享后执行的回调函数
-                                //跳转到我的邀请页面
-                            },
-                            cancel: function () {
-                                // 用户取消分享后执行的回调函数
-                                //删除存储到数据库中的数据
-                               alert("您的邀请单信息已经保存，可在‘我的邀请’中查看");
-                            }
-                        });
                     });
                 }
             });
@@ -401,10 +366,48 @@ $(document).on("pageInit", "#page5", function(e, pageId, $page) {
             //如果是地址待定的情况,给出推荐餐厅信息，待补充。
             $("#info").html("");
         }
+        //监听分享操作
+        //分享页面的监听
+        var title="一伙锅";
+        var desc="";
+        var link="";
+        var imgUrl='http://awuyangc.xicp.net/images/qrcode/qrcode_for_gh_be461b35d165_258.jpg';
+        wx.onMenuShareAppMessage({
+            title:title, // 分享标题
+            desc:desc, // 分享描述
+            link: link, // 分享链接
+            imgUrl:imgUrl, // 分享图标
+            type: '', // 分享类型,music、video或link，不填默认为link
+            dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
+            trigger: function (res) {
+                //将信息存储到数据库
+                var own=this;
+                $.ajax({
+                    async:false,
+                    url: "/saveInviteInfo",
+                    data: {day:encode(day),time1:encode(time1),time2:encode(time2),address:encode(address)},
+                    success: function (data) {
+                        own.desc="您的好友 "+data.nickName+" 邀请您一伙锅";
+                        own.link='http://awuyangc.xicp.net/check_sign?&inviteId='+encode(data._id); // 分享链接
+                    }
+                })
+            },
+            success: function () {
+                // 用户确认分享后执行的回调函数
+                alert("您的邀请单信息已成功分享，可在‘我的邀请’中查看好友报名情况");
+                $.router.load('/index', true);
+                //跳转到我的邀请页面
+            },
+            cancel: function () {
+                // 用户取消分享后执行的回调函数
+                //删除存储到数据库中的数据
+                alert("您的邀请单信息已经保存，可在‘我的邀请’中查看");
+            }
+        });
 });
 //加载前
 $(document).on("pageAnimationStart", "#page5", function(e, pageId, $page) {
-    wx.showOptionMenu();
+
     $("#info").html("");
     $("#mask").removeClass("modal-overlay-visible");
 });
@@ -417,5 +420,102 @@ function share(){
 
 //签名页面初始化
 $(document).on("pageInit", "#page6", function(e, pageId, $page) {
+    var address=$("#sign").attr("data-inviteInfo-address");
+    var day=$("#sign").attr("data-inviteInfo-day");
+    var time1=$("#sign").attr("data-inviteInfo-time1");
+    var time2=$("#sign").attr("data-inviteInfo-time2");
+    if(address.trim()!=""){
+        //显示用户选择的餐厅
+        var url="http://yuntuapi.amap.com/datasearch/id?tableid=55656259e4b0ccb608f13383&_id="+address+"&key=861347745e27c5cc79e4aa86befb961a";
+        $.ajax({
+            async:false,
+            dataType : "jsonp",
+            url:url,
+            success: function (result) {
+                //只有一个结果
+                $(result.datas).each(function(i,val){
+                    var html ='<div style="color:red;font-size:25px;padding-top:10px;text-align:center;">邀请单信息</div>'+
+                        '<div class="card" style="width:95%">' +
+                        '<a id="mapId" href="#page7" data="'+val._id+'" data-address="'+address+'">'+
+                        '<div class="card-header">'+val._name+'</div>' +
+                        '<div class="card-content">' +
+                        '<div class="list-block media-list">' +
+                        '<ul style="padding-left: 0rem;">' +
+                        '<li class="item-content">' +
+                        '<div class="item-media">' +
+                        '<img src="'+(val._image.length>0?val._image[0]._preurl:'')+'" width="60">' +
+                        '</div>' +
+                        '<div class="item-inner">' +
+                        '<div class="item-content">' +
+                        val._address +
+                        '</div>' +
+                        '</div>' +
+                        '</li>' +
+                        '</ul>' +
+                        '</div>' +
+                        '</div>' +
+                        '<div class="card-footer">'+
+                        '<span>邀请日期： '+day+'</span><br>'+
+                        '<span style="padding-top: 5px;">到店时间： '+time1+' 到 '+time2+' 之间</span>'+
+                        '</div>'+
+                        '</a>'+
+                        '</div>';
+                    // 添加新条目
+                    $('#info').html(html);
+                });
+            }
+        });
+    }
+    else{
+        //如果是地址待定的情况,给出推荐餐厅信息，待补充。
+        $("#info").html("");
+    }
+    //初始化报名的人员
+
+});
+
+//签名页地图初始化
+$(document).on("pageInit", "#page7", function(e, pageId, $page) {
+    if($("#container").html().trim()==""){
+        var map=null;
+        //构造云数据检索类
+        var search = new AMap.CloudDataSearch('55656259e4b0ccb608f13383');
+        //根据id查询
+        search.searchById($("#mapId").attr("data-address"), cloudSearch_CallBack);
+        function cloudSearch_CallBack(status, data) {
+            var clouddata = data.datas[0];
+            //添加marker
+            var location = clouddata._location;
+            var map = new AMap.Map("container", {
+                resizeEnable: true,
+                zoom: 12, //地图显示的缩放级别
+                center:location
+            });
+            map.plugin(["AMap.ToolBar"], function() {
+                map.addControl(new AMap.ToolBar());
+            });
+            map.plugin(["AMap.AdvancedInfoWindow"], function() {
+                map.addControl(new AMap.AdvancedInfoWindow());
+            });
+            var marker = new AMap.Marker({
+                map: map,
+                position: location
+            });
+            //添加infowindow
+            var photo = [];
+            // if (clouddata._image[0]) {//如果有上传的图片
+            //     photo = ['<img width=240 height=100 src="' + clouddata._image[0]._preurl + '"><br>'];
+            // }
+            var infoWindow = new AMap.AdvancedInfoWindow({
+                content: "<font face=\"微软雅黑\"color=\"#3366FF\">" + clouddata._name + "</font><hr />" + "地址：" + clouddata._address + "<br />",
+                autoMove: true,
+                offset: {x: 0, y: -30}
+            });
+            infoWindow.open(map, marker.getPosition());
+            marker.on('click', function(e) {
+                infoWindow.open(map, marker.getPosition());
+            });
+        }
+    }
 
 });

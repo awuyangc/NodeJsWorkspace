@@ -41,12 +41,6 @@ router.get('/share', function(req, res) {
     res.render('share', { day:day,time1:time1,time2:time2,address:address});
 });
 
-//地图页面跳转
-router.get('/map', function(req, res) {
-    var id=base64url.decode(base64url.unescape(req.query.id));
-    res.render('map', { id:id });
-});
-
 //用于微信的接入
 router.get('/checkSignature', function(req,res) {
     signature.checkSignature(config)(req,res,function() {
@@ -178,7 +172,7 @@ router.get('/check_sign', function(req, res) {
     var inviteId=base64url.decode(base64url.unescape(req.query.inviteId));
     //查找对应的邀请信息
     var InviteInfo = mgSchema.invite;
-    //查询本地数据库看是否存在此User
+    //查询本地数据库看是否存在此邀请单
     //注意此方法是异步的
     InviteInfo.findOne({_id:mongoose.Types.ObjectId(inviteId)}, function(err, inviteInfo){
         console.log('开始查询本地数据库的邀请单信息')
@@ -206,9 +200,21 @@ router.get('/check_sign', function(req, res) {
 
 //报名页跳转
 router.get('/sign', function(req, res) {
-    //首先获取用户信息
+        //首先获取邀请单信息
         var  inviteInfo=req.session.inviteInfo;
-        res.render('sign', { title:'重构中！！！' ,wx_user: req.session.current_user,inviteInfo:inviteInfo});
+        //通过邀请单获取邀请人的信息
+         var User = mgSchema.user;
+    User.findOne({openid:inviteInfo.openid}, function(err, user){
+        console.log('开始查询本地数据库的邀请单信息')
+        if(err || inviteInfo == null|| inviteInfo.length==0){
+            console.log('本地数据库没有用户');
+            //跳转到error页面
+            res.render('error', {info:"没有找到邀请人信息"});
+        }else{
+            res.render('sign', { title:'重构中！！！' ,wx_user: req.session.current_user,inviteInfo:inviteInfo,inviteUser:user});
+        }
+    });
+
 });
 //报名页的用户授权
 router.get('/sign_callback', function(req, res) {
