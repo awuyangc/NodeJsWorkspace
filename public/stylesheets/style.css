@@ -78,3 +78,15 @@ a {
 .card-footer, .card-header{
     display:-webkit-box;
 }
+
+.success{
+    color:green;
+}
+
+.danger{
+    color:red;
+}
+
+.warning{
+    color:yellow;
+}

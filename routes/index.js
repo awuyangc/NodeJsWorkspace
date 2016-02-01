@@ -3,6 +3,7 @@ var signature = require('wx_jsapi_sign');
 var API=require('wechat-api');
 var OAuth=require('wechat-oauth');
 var mongoose = require('mongoose');
+var moment = require("moment");
 var mgSchema=require('../models/mg_schema.js');
 var config =require('../config')();
 var base64url=require("base64-url");
@@ -254,5 +255,49 @@ router.get('/sign_callback', function(req, res) {
     });
 });
 
+
+router.get('/getPerson', function(req, res) {
+   var inviteId=base64url.decode(base64url.unescape(req.query.inviteId));
+    //通过邀请单获取报名人的信息
+    //查找对应的邀请信息
+    var InvitePerson = mgSchema.invitePerson;
+    //查询本地数据库看是否存在此邀请单
+    //注意此方法是异步的
+    var user=req.session.current_user;
+    InvitePerson.find({inviteid:inviteId}, function(err, docs){
+        if(docs.length!=0){
+            res.json(docs);
+        }
+    });
+});
+
+router.get('/savePerson', function(req, res) {
+    var inviteId=base64url.decode(base64url.unescape(req.query.inviteId));
+    //通过邀请单获取报名人的信息
+    //查找对应的邀请信息
+    var InvitePerson = mgSchema.invitePerson;
+    //查询本地数据库看是否存在此邀请单
+    //注意此方法是异步的
+    InvitePerson.find({inviteid:inviteId,openid:req.session.current_user.openid}, function(err, docs){
+        //没有报名
+        if(docs.length==0){
+            var invitePerson=new InvitePerson();
+            invitePerson.user=req.session.current_user;
+            invitePerson.inviteid=inviteId;
+            invitePerson.create_time=moment().format("YYYY-MM-DD HH:mm:ss");
+            invitePerson.save(function(err, person) {
+                if (err) {
+                    res.json(0);
+
+                } else {
+                    res.json(1);
+                }
+            });
+        }
+        else{
+            res.json(2);
+        }
+    });
+});
 
 module.exports = router;

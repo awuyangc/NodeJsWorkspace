@@ -26,3 +26,21 @@ var inviteScheMa = new Schema({
     status:String
 }); //  定义了一个新的模型，但是此模式还未和users集合有关联
 exports.invite = db.model('c_invite_info', inviteScheMa); //  与users集合关联
+
+var invitePersonScheMa = new Schema({
+    inviteid: String,
+    create_time:String,
+    user:[{type: Schema.Types.ObjectId, ref: 'user'}],
+    suggest:String
+}); //  定义了一个新的模型，但是此模式还未和users集合有关联
+exports.invitePerson = db.model('c_invite_person', invitePersonScheMa); //  与users集合关联
+
+/*
+var invitePersonScheMa = new Schema({
+    inviteid: String,
+    openid:String,
+    create_time:String,
+    suggest:String
+}); //  定义了一个新的模型，但是此模式还未和users集合有关联
+exports.invitePerson = db.model('c_invite_person', invitePersonScheMa); //  与users集合关联
+*/

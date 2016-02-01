@@ -36,7 +36,8 @@ $.ajax({
         });
 
         wx.error(function(res){
-            alert("微信js签名错误,请重新进入！");
+            alert("微信js签名错误,将自动重新进入！");
+            $.router.load('/index', true);
             // config信息验证失败会执行error函数，如签名过期导致验证失败，具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
         });
 
@@ -187,59 +188,57 @@ $(document).on("pageInit", "#page3", function(e, pageId, $page) {
     // 每次加载添加多少条目
     var itemsPerLoad = 10;
     var url="http://yuntuapi.amap.com/datasearch/local?tableid=55656259e4b0ccb608f13383&city=武汉市&keywords=&limit="+itemsPerLoad+"&page=1&key=861347745e27c5cc79e4aa86befb961a";
-    $.ajax({
-        dataType : "jsonp",
-        url:url,
-        success: function (result) {
-            //如果没有显示则进行初始化
-            if($('.list-container .card').length==0){
+    if($('.list-container .card').length==0){
+        $.ajax({
+            dataType : "jsonp",
+            url:url,
+            success: function (result) {
                 $(result.datas).each(function(i,val){
                     addItems(val._id,val._name,val._image.length>0?val._image[0]._preurl:'',val._address);
                 });
             }
-            // 注册'infinite'事件处理函数
-            $(document).on('infinite', '.infinite-scroll-bottom',function() {
-                // 如果正在加载，则退出
-                if (loading) return;
-                // 设置flag
-                loading = true;
-                var lastIndex = $('.list-container .card').length;
-                //判断是否全部加载,查看lastIndex是否能整除itemsPerLoad，如果true可能没有全部加载，如果fals全部加载
-                if(zhengchu(lastIndex,itemsPerLoad)){
-                    // 模拟1s的加载过程
-                    setTimeout(function() {
-                        var url="http://yuntuapi.amap.com/datasearch/local?tableid=55656259e4b0ccb608f13383&city=武汉市&keywords=&limit="+itemsPerLoad+"&page="+(lastIndex/itemsPerLoad+1)+"&key=861347745e27c5cc79e4aa86befb961a";
-                        $.ajax({
-                            dataType : "jsonp",
-                            url:url,
-                            success: function (result) {
-                                $(result.datas).each(function(i,val){
-                                    addItems(val._id,val._name,val._image.length>0?val._image[0]._preurl:'',val._address);
-                                });
-                                // 重置加载flag
-                                loading = false;
-                                //如果获得的结果数量小于默认数量则判断加载完毕
-                                if (result.datas.length<itemsPerLoad) {
-                                    // 加载完毕，则注销无限加载事件，以防不必要的加载
-                                    $.detachInfiniteScroll($('.infinite-scroll'));
-                                    // 删除加载提示符
-                                    $('.infinite-scroll-preloader').remove();
-                                    return;
-                                }
-                                //容器发生改变,如果是js滚动，需要刷新滚动
-                                $.refreshScroller();
-                            }
-                        })
+        });
+    }
+    $(document).on('infinite', '.infinite-scroll-bottom',function() {
+        // 如果正在加载，则退出
+        if (loading) return;
+        // 设置flag
+        loading = true;
+        var lastIndex = $('.list-container .card').length;
+        //判断是否全部加载,查看lastIndex是否能整除itemsPerLoad，如果true可能没有全部加载，如果fals全部加载
+        if(zhengchu(lastIndex,itemsPerLoad)){
+            // 模拟1s的加载过程
+            setTimeout(function() {
+                var url="http://yuntuapi.amap.com/datasearch/local?tableid=55656259e4b0ccb608f13383&city=武汉市&keywords=&limit="+itemsPerLoad+"&page="+(lastIndex/itemsPerLoad+1)+"&key=861347745e27c5cc79e4aa86befb961a";
+                $.ajax({
+                    dataType : "jsonp",
+                    url:url,
+                    success: function (result) {
+                        $(result.datas).each(function(i,val){
+                            addItems(val._id,val._name,val._image.length>0?val._image[0]._preurl:'',val._address);
+                        });
+                        // 重置加载flag
+                        loading = false;
+                        //如果获得的结果数量小于默认数量则判断加载完毕
+                        if (result.datas.length<itemsPerLoad) {
+                            // 加载完毕，则注销无限加载事件，以防不必要的加载
+                            $.detachInfiniteScroll($('.infinite-scroll'));
+                            // 删除加载提示符
+                            $('.infinite-scroll-preloader').remove();
+                            return;
+                        }
+                        //容器发生改变,如果是js滚动，需要刷新滚动
+                        $.refreshScroller();
+                    }
+                })
 
-                    }, 500);
-                }
-                else{
-                    $.detachInfiniteScroll($('.infinite-scroll'));
-                    // 删除加载提示符
-                    $('.infinite-scroll-preloader').remove();
-                    return;
-                }
-            });
+            }, 1000);
+        }
+        else{
+            $.detachInfiniteScroll($('.infinite-scroll'));
+            // 删除加载提示符
+            $('.infinite-scroll-preloader').remove();
+            return;
         }
     });
 });
@@ -470,8 +469,44 @@ $(document).on("pageInit", "#page6", function(e, pageId, $page) {
         //如果是地址待定的情况,给出推荐餐厅信息，待补充。
         $("#info").html("");
     }
+    /*
     //初始化报名的人员
+    var inviteId=$("#sign").attr("data-inviteInfo-id");
+    $.ajax({
+        async:false,
+        data:{inviteId:encode(inviteId)},
+        url:"/getPerson",
+        success: function (result) {
+            //只有一个结果
+            $(result).each(function(i,val){
+                alert(val.openid);
+            });
+        }
+    });
+    */
+    $(document).on("click","#btnOk",function(){
+        $.ajax({
+            async:false,
+            data:{inviteId:encode(inviteId)},
+            url:"/savePerson",
+            success: function (result) {
+                //只有一个结果
+                alert(typeof(result)+"   "+result);
+                if(result==0){
+                    $.toast("报名失败",2000,"danger");
+                }
+                else if(result==1){
+                    $.toast("报名成功",2000,"success");
+                }
+                else{
+                    $.toast("您已报名，无法重复报名",2000,"warning");
+                }
 
+
+            }
+        });
+    });
+    //$("#personGroup").append
 });
 
 //签名页地图初始化

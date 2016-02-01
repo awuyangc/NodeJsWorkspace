@@ -20,11 +20,15 @@
         </a>
     </nav>
 
-    <div class="content" id="sign" data-inviteInfo-address="{{inviteInfo.address}}" data-inviteInfo-day="{{inviteInfo.day}}" data-inviteInfo-time1="{{inviteInfo.time_begin}}" data-inviteInfo-time2="{{inviteInfo.time_end}}">
+    <div class="content" id="sign" data-inviteInfo-id="{{inviteInfo._id}}" data-inviteInfo-address="{{inviteInfo.address}}" data-inviteInfo-day="{{inviteInfo.day}}" data-inviteInfo-time1="{{inviteInfo.time_begin}}" data-inviteInfo-time2="{{inviteInfo.time_end}}">
         <!-- 这里是页面内容区 -->
         <div style="font-size:15px;text-align:center;padding:10px">您的好友 “{{inviteUser.nickname}}” 邀请您一伙锅去！</div>
         <div id="info"></div>
         <div id="personGroup"></div>
+        <div class="content-block">
+            <p><a href="#" id="btnOk" class="button button-big button-success">就这么愉快的决定了 </a></p>
+            <p><a href="#" id="btnSuggess" class="button button-big button-danger">不方便，拒绝或建议更改 </a></p>
+        </div>
     </div>
 </div>
 
